@@ -1,0 +1,102 @@
+services:
+  - type: web
+    name: mizumba-backend
+    runtime: docker
+    rootDir: backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: API_V1_PREFIX
+        value: /api/v1
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mizumba-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: mizumba-redis
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "15"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "30"
+      - key: EMAIL_CONFIRMATION_TOKEN_EXPIRE_HOURS
+        value: "24"
+      - key: PASSWORD_RESET_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: UPLOAD_DIR
+        value: uploads
+      - key: MAX_UPLOAD_SIZE_MB
+        value: "10"
+      - key: MAX_AUDIO_UPLOAD_SIZE_MB
+        value: "25"
+      - key: ENABLE_WHISPER_TRANSCRIPTION
+        value: "false"
+      - key: WHISPER_MODEL_NAME
+        value: base
+      - key: WHISPER_DEFAULT_LANGUAGE
+        value: ""
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: APPLE_CLIENT_ID
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        value: noreply@mizumba.app
+      - key: SMTP_USE_TLS
+        value: "true"
+      - key: STORAGE_PROVIDER
+        value: local
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_REGION
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RATE_LIMIT_REQUESTS
+        value: "120"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+      - key: DEFAULT_COUNTRY_CODE
+        value: DEFAULT
+      - key: AUTH_PROVIDER_RULES_JSON
+        value: '{"DEFAULT":{"google":true,"apple":true},"RU":{"google":false,"apple":false}}'
+
+  - type: redis
+    name: mizumba-redis
+    plan: free
+    ipAllowList: []
+
+databases:
+  - name: mizumba-postgres
+    plan: free
+    databaseName: mizumba
+    user: mizumba
